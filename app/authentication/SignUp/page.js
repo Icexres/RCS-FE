@@ -11,7 +11,7 @@ export default function SignUp() {
           </div>
         </div>
       </div>
-        <main className="flex items-center justify-center min-h-screen p-4">
+        <main className="flex items-center justify-center min-h-160 p-4">
         <div className="w-full max-w-md font-gmono border border-gray-300 rounded-lg p-8 shadow-md">
           <h1 className="text-3xl font-bold mb-8 text-center">Sign Up</h1>
           <form className="space-y-6">
@@ -33,6 +33,9 @@ export default function SignUp() {
           </form>
         </div>
       </main>
+      <footer className="text-center p-4 mt-8 text-sm text-gray-500">
+        &copy; {new Date().getFullYear()} KNN Recommendation System. All rights reserved.
+      </footer>
     </>
   );
 }
