@@ -1,5 +1,40 @@
+'use client';
 import Link from "next/link";
+import axios from "axios";
+import { useState } from "react";
+
 export default function Login() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    
+    try {
+      const response = await axios.post("http://localhost:7000/api/auth/login", formData);
+      console.log("Login successful:", response.data);
+      setSuccess(true);
+      setTimeout(() => {
+        window.location.href = "/homepage";
+      }, 2000);
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed. Please try again.");
+      console.error("Login error:", err);
+    }
+  };
+
   return (
     <>
       <div className="header">
@@ -14,14 +49,25 @@ export default function Login() {
         <main className="flex items-center justify-center min-h-160 p-4">
         <div className="w-full max-w-md font-gmono border border-gray-300 rounded-lg p-8 shadow-md">
           <h1 className="text-3xl font-bold mb-8 text-center">Login</h1>
-          <form className="space-y-6">
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+              Login successful! Redirecting to dashboard...
+            </div>
+          )}
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-2">Email</label>
-              <input type="email" id="email" name="email" className="border border-gray-300 rounded-lg px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-emerald-800" required/>
+              <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className="border border-gray-300 rounded-lg px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-emerald-800" required/>
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium mb-2">Password</label>
-              <input type="password" id="password" name="password"className="border border-gray-300 rounded-lg px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-emerald-800"required/>
+              <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className="border border-gray-300 rounded-lg px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-emerald-800"required/>
             </div>
             <button type="submit" className="bg-emerald-800 text-white px-6 py-3 rounded-lg w-full font-medium hover:bg-emerald-900 transition-colors">
               Login
