@@ -8,7 +8,7 @@ const homepage = () => {
       <Header />
       <div className="flex">
         <UserSidebar />
-        <div className="p-4">WELCOME TO HOMEPAGE</div>
+        <div className="p-4">WELCOME TO DASHBOARD</div>
       </div>  
   </>)
 }

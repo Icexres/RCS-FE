@@ -2,8 +2,10 @@
 import Link from "next/link";
 import axios from "axios";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -25,10 +27,10 @@ export default function Login() {
     try {
       const response = await axios.post("http://localhost:7000/api/auth/login", formData);
       console.log("Login successful:", response.data);
+      const user = response.data.user || response.data;
+      
       setSuccess(true);
-      setTimeout(() => {
-        window.location.href = "/homepage";
-      }, 2000);
+      login(user);
     } catch (err) {
       setError(err.response?.data?.message || "Login failed. Please try again.");
       console.error("Login error:", err);
