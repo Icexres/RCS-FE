@@ -8,6 +8,8 @@ export default function UserSidebar() {
   const menuItems = [
     { name: 'Homepage', path: '/homepage' },
     { name: 'Dashboard', path: '/dashboard'},
+    {name:  'Favourite', path: '/favourite'},
+    {name:  'Restaurant List', path: '/restaurant-list'},
   ];
 
   return (
