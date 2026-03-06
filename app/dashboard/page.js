@@ -4,14 +4,17 @@ import { useAuth } from '@/context/AuthContext';
 import Header from '../../components/Header'
 import UserSidebar from '../../components/UserSidebar';
 
-const AdminProfile = () => {
-  const { user } = useAuth();
+const UserDashboard = () => {
+  const { user } = useAuth(); // to get user data stored in react context
   const [profile, setProfile] = useState({
     name: user?.data?.username || 'User',
     email: user?.data?.email || 'user@test.com',
     role: user?.data?.role || 'test-user',
   })
-
+  const [restaurants, setRestaurants] = useState([])
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   return (
     <>
       <Header />
@@ -30,4 +33,4 @@ const AdminProfile = () => {
   )
 }
 
-export default AdminProfile
+export default UserDashboard

@@ -9,7 +9,7 @@ export default function UserSidebar() {
     { name: 'Homepage', path: '/homepage' },
     { name: 'Dashboard', path: '/dashboard'},
     {name:  'Favourite', path: '/favourite'},
-    {name:  'Restaurant List', path: '/restaurant-list'},
+    {name:  'Restaurant List', path: '/RestaurantList'},
   ];
 
   return (

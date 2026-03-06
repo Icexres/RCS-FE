@@ -34,7 +34,7 @@ const AdminRestaurants = () => {
       console.error('Error fetching restaurants:', err)
       
       if (err.response?.status === 404) {
-        // Endpoint doesn't exist yet
+        // Endpoint doesn't exist
         setError('Restaurant endpoint not found. Please check your backend.')
       } else if (err.response?.status === 500) {
         setError('Server error. Please check your backend is running correctly.')
