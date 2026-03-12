@@ -6,10 +6,10 @@ export default function UserSidebar() {
   const pathname = usePathname();
   
   const menuItems = [
-    { name: 'Homepage', path: '/homepage' },
-    { name: 'Dashboard', path: '/dashboard'},
-    {name:  'Favourite', path: '/favourite'},
-    {name:  'Restaurant List', path: '/RestaurantList'},
+    { name:'Homepage', path: '/homepage' },
+    { name:'Dashboard', path: '/dashboard'},
+    {name:'Favourite', path: '/favourites'},
+    {name:'Restaurant List', path: '/RestaurantList'},
   ];
 
   return (

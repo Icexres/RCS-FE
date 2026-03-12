@@ -5,44 +5,56 @@ import Header from '../../components/Header'
 import UserSidebar from '../../components/UserSidebar'
 import { useAuth } from '@/context/AuthContext'
 
-const RestaurantList = () => {
-  const [restaurants, setRestaurants] = useState([])
+const Favourites = () => {
+  const [favouriteRestaurants, setFavouriteRestaurants] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [favourites, setFavourites] = useState([])
   const [likes, setLikes] = useState([])
 
   const { user } = useAuth()
   const userId = user?.data?.id || user?.id
+
   const API_URL = 'http://localhost:7000/api/restaurant'
   const LIKE_API_URL = 'http://localhost:7000/api/like'
   const FAV_API_URL = 'http://localhost:7000/api/favourite'
 
   useEffect(() => {
     if (userId) {
-      fetchRestaurants()
-      fetchUserLikes()
       fetchUserFavourites()
+      fetchUserLikes()
     }
   }, [userId])
 
-  const fetchRestaurants = async () => {
+  const fetchUserFavourites = async () => {
     try {
       setLoading(true)
-      const response = await axios.get(`${API_URL}/all`)
-      const data = response.data
-      setRestaurants(data.data)
+      
+      // Fetch user's favourite IDs
+      const favResponse = await axios.get(`${FAV_API_URL}/user/${userId}`)
+      const favouriteIds = favResponse.data.data?.map(item => 
+        item.restaurant_id || item.restaurantId || item.id
+      ) || []
+
+      if (favouriteIds.length === 0) {
+        setFavouriteRestaurants([])
+        setLoading(false)
+        return
+      }
+
+      // Fetch all restaurants
+      const restaurantsResponse = await axios.get(`${API_URL}/all`)
+      const allRestaurants = restaurantsResponse.data.data
+
+      // Filter to get only favourited restaurants
+      const favourited = allRestaurants.filter(restaurant => 
+        favouriteIds.includes(restaurant.id)
+      )
+
+      setFavouriteRestaurants(favourited)
       setError(null)
     } catch (err) {
-      console.error('Error fetching restaurants:', err)
-
-      if (err.response?.status === 404) {
-        setError('Restaurant endpoint not found. Please check your backend.')
-      } else if (err.response?.status === 500) {
-        setError('Server error. Please check your backend is running correctly.')
-      } else {
-        setError(`Failed to load restaurants: ${err.response?.data?.message || err.message}`)
-      }
+      console.error('Error fetching favourites:', err)
+      setError('Failed to load your favourite restaurants. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -52,7 +64,7 @@ const RestaurantList = () => {
     try {
       const response = await axios.get(`${LIKE_API_URL}/user/${userId}`)
       const likedIds = response.data.data?.map(item => 
-        item.restaurantId || item.restaurant_id || item.id
+        item.restaurant_id || item.restaurantId || item.id
       ) || []
       setLikes(likedIds)
     } catch (err) {
@@ -60,15 +72,18 @@ const RestaurantList = () => {
     }
   }
 
-  const fetchUserFavourites = async () => {
+  const handleRemoveFavourite = async (restaurantId) => {
     try {
-      const response = await axios.get(`${FAV_API_URL}/user/${userId}`)
-      const favIds = response.data.data?.map(item => 
-        item.restaurantId || item.restaurant_id || item.id
-      ) || []
-      setFavourites(favIds)
+      await axios.post(`${FAV_API_URL}/remove`, {
+        userId: userId,
+        restaurantId: restaurantId
+      })
+      
+      // Remove from local state
+      setFavouriteRestaurants(favouriteRestaurants.filter(r => r.id !== restaurantId))
     } catch (err) {
-      console.error('Error fetching favourites:', err)
+      console.error('Error removing favourite:', err)
+      alert('Failed to remove from favourites. Please try again.')
     }
   }
 
@@ -93,27 +108,6 @@ const RestaurantList = () => {
     }
   }
 
-  const handleFavourite = async (restaurantId) => {
-    try {
-      if (favourites.includes(restaurantId)) {
-        await axios.post(`${FAV_API_URL}/remove`, {
-          userId: userId,
-          restaurantId: restaurantId
-        })
-        setFavourites(favourites.filter(id => id !== restaurantId))
-      } else {
-        await axios.post(`${FAV_API_URL}/add`, {
-          userId: userId,
-          restaurantId: restaurantId
-        })
-        setFavourites([...favourites, restaurantId])
-      }
-    } catch (err) {
-      console.error('Error toggling favourite:', err)
-      alert('Failed to update favourite. Please try again.')
-    }
-  }
-
   return (
     <>
       <Header />
@@ -122,7 +116,7 @@ const RestaurantList = () => {
 
         <div className="flex-1 p-8">
           <div className="max-w-6xl mx-auto">
-            <h1 className="text-4xl font-bold text-gray-900 mb-8">Restaurants</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-8">My Favourites</h1>
 
             {/* Error Message */}
             {error && (
@@ -141,28 +135,29 @@ const RestaurantList = () => {
             {loading && (
               <div className="text-center py-16">
                 <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-emerald-600 border-r-transparent"></div>
-                <p className="mt-4 text-gray-600">Loading restaurants...</p>
+                <p className="mt-4 text-gray-600">Loading your favourites...</p>
               </div>
             )}
 
-            {/* Restaurants Grid */}
-            {!loading && restaurants.length > 0 && (
+            {/* Favourites Grid */}
+            {!loading && favouriteRestaurants.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {restaurants.map((restaurant) => (
+                {favouriteRestaurants.map((restaurant) => (
                   <div
                     key={restaurant.id}
                     className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100 flex flex-col"
                   >
                     {/* Restaurant Header */}
                     <div className="bg-linear-to-r from-emerald-500 to-emerald-600 h-32 flex items-center justify-center relative">
-                      {/* Favourite Button - Top Right */}
+                      {/* Remove from Favourites Button */}
                       <button
-                        onClick={() => handleFavourite(restaurant.id)}
+                        onClick={() => handleRemoveFavourite(restaurant.id)}
                         className="absolute top-3 right-3 bg-white p-2 rounded-full hover:scale-110 transition-transform shadow-md"
-                        title={favourites.includes(restaurant.id) ? "Remove from favourites" : "Add to favourites"}
+                        title="Remove from favourites"
                       >
-                        {favourites.includes(restaurant.id) ? '❤️' : '🤍'}
+                        ❤️
                       </button>
+                      <div className="text-white text-5xl">🍽️</div>
                     </div>
 
                     {/* Restaurant Info */}
@@ -204,10 +199,17 @@ const RestaurantList = () => {
             )}
 
             {/* Empty State */}
-            {!loading && restaurants.length === 0 && !error && (
+            {!loading && favouriteRestaurants.length === 0 && !error && (
               <div className="text-center py-16">
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">No restaurants found</h3>
-                <p className="text-gray-500">Check back later for new restaurants!</p>
+                <div className="text-6xl mb-4">🤍</div>
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">No favourites yet</h3>
+                <p className="text-gray-500 mb-6">Start adding restaurants to your favourites!</p>
+                <a 
+                  href="/RestaurantList" 
+                  className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-6 rounded-lg font-medium transition-colors"
+                >
+                  Browse Restaurants
+                </a>
               </div>
             )}
           </div>
@@ -217,4 +219,4 @@ const RestaurantList = () => {
   )
 }
 
-export default RestaurantList 
+export default Favourites
