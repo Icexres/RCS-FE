@@ -157,7 +157,6 @@ const Favourites = () => {
                       >
                         ❤️
                       </button>
-                      <div className="text-white text-5xl">🍽️</div>
                     </div>
 
                     {/* Restaurant Info */}
@@ -178,7 +177,7 @@ const Favourites = () => {
 
                       {/* Action Buttons */}
                       <div className="flex gap-2 pt-4 border-t border-gray-100 mt-auto">
-                        <button className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                        <button onClick={() => window.location.href = `/RestaurantView/${restaurant.id}`} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
                           View Details
                         </button>
                         <button

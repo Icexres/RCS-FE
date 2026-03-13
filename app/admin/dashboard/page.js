@@ -17,13 +17,14 @@ const AdminRestaurants = () => {
     r_name: '',
     r_desc: '',
     r_location: '',
-    phone:'',
+    phone: '',
   })
   const [newTag, setNewTag] = useState({
     name: '',
   })
   const [selectedTags, setSelectedTags] = useState([])
-  const [restaurantTags, setRestaurantTags] = useState({}) // Store tags for each restaurant
+  const [restaurantTags, setRestaurantTags] = useState({})
+  const [tagWeights, setTagWeights] = useState({})
 
   const API_URL = 'http://localhost:7000/api/restaurant'
   const TAG_API_URL = 'http://localhost:7000/api/tag'
@@ -136,7 +137,7 @@ const AdminRestaurants = () => {
       setNewTag({ name: '' })
       
       alert('Tag added successfully!')
-      fetchTags() // Refresh tag list
+      fetchTags()
     } catch (err) {
       console.error('Error adding tag:', err)
       setError(err.response?.data?.message || 'Failed to add tag. Please try again.')
@@ -154,7 +155,7 @@ const AdminRestaurants = () => {
       setTags(tags.filter(tag => tag.id !== tagId))
       
       alert('Tag deleted successfully!')
-      fetchRestaurants() // Refresh to update restaurant tags
+      fetchRestaurants()
     } catch (err) {
       console.error('Error deleting tag:', err)
       setError(err.response?.data?.message || 'Failed to delete tag')
@@ -176,7 +177,8 @@ const AdminRestaurants = () => {
       const assignPromises = selectedTags.map(tagId => 
         axios.post(`${TAG_API_URL}/assign`, {
           restaurantId: selectedRestaurant.id,
-          tagId: tagId
+          tagId: tagId,
+          weight: parseFloat(tagWeights[tagId]) || 1
         })
       )
 
@@ -185,6 +187,7 @@ const AdminRestaurants = () => {
       alert('Tags assigned successfully!')
       setShowAssignTagModal(false)
       setSelectedTags([])
+      setTagWeights({})
       
       // Refresh restaurants and their tags
       fetchRestaurants()
@@ -200,6 +203,12 @@ const AdminRestaurants = () => {
     setSelectedRestaurant(restaurant)
     const currentTags = restaurantTags[restaurant.id] || []
     setSelectedTags(currentTags.map(tag => tag.id))
+    // Initialize weights for current tags
+    const weights = {}
+    currentTags.forEach(tag => {
+      weights[tag.id] = tag.weight || 1
+    })
+    setTagWeights(weights)
     setShowAssignTagModal(true)
   }
 
@@ -209,6 +218,13 @@ const AdminRestaurants = () => {
         ? prev.filter(id => id !== tagId)
         : [...prev, tagId]
     )
+  }
+
+  const handleWeightChange = (tagId, weight) => {
+    setTagWeights(prev => ({
+      ...prev,
+      [tagId]: weight || 1
+    }))
   }
 
   const handleDeleteRestaurant = async (id) => {
@@ -373,17 +389,32 @@ const AdminRestaurants = () => {
                   </h2>
                   <div className="space-y-2 max-h-96 overflow-y-auto mb-4">
                     {tags.map(tag => (
-                      <label key={tag.id} className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <div key={tag.id} className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50">
                         <input
                           type="checkbox"
                           checked={selectedTags.includes(tag.id)}
                           onChange={() => toggleTagSelection(tag.id)}
                           className="w-4 h-4 text-blue-600 rounded"
                         />
-                        <div>
+                        <div className="flex-1">
                           <div className="font-medium">{tag.name}</div>
                         </div>
-                      </label>
+                        {selectedTags.includes(tag.id) && (
+                          <div className="flex items-center gap-2">
+                            <label className="text-sm text-gray-600">Weight:</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.1"
+                              value={tagWeights[tag.id] || 1}
+                              onChange={(e) => handleWeightChange(tag.id, e.target.value)}
+                              className="w-16 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="1"
+                            />
+                          </div>
+                        )}
+                      </div>
                     ))}
                     {tags.length === 0 && (
                       <p className="text-gray-500 text-center py-4">No tags available. Create tags first.</p>
