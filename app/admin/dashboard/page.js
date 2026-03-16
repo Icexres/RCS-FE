@@ -13,6 +13,7 @@ const AdminRestaurants = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [originalTags, setOriginalTags] = useState([])
   const [newRestaurant, setNewRestaurant] = useState({
     r_name: '',
     r_desc: '',
@@ -165,44 +166,50 @@ const AdminRestaurants = () => {
   }
 
   const handleAssignTags = async () => {
-    if (!selectedRestaurant || selectedTags.length === 0) {
-      alert('Please select at least one tag')
-      return
-    }
+  if (!selectedRestaurant) return
 
-    try {
-      setLoading(true)
-      
-      // Send individual requests for each tag
-      const assignPromises = selectedTags.map(tagId => 
-        axios.post(`${TAG_API_URL}/assign`, {
-          restaurantId: selectedRestaurant.id,
-          tagId: tagId,
-          weight: parseFloat(tagWeights[tagId]) || 1
-        })
-      )
+  try {
+    setLoading(true)
 
-      await Promise.all(assignPromises)
+    const toAssign = selectedTags.filter(id => !originalTags.includes(id))
+    const toUnassign = originalTags.filter(id => !selectedTags.includes(id))
 
-      alert('Tags assigned successfully!')
-      setShowAssignTagModal(false)
-      setSelectedTags([])
-      setTagWeights({})
-      
-      // Refresh restaurants and their tags
-      fetchRestaurants()
-    } catch (err) {
-      console.error('Error assigning tags:', err)
-      setError(err.response?.data?.message || 'Failed to assign tags')
-    } finally {
-      setLoading(false)
-    }
+    const assignPromises = toAssign.map(tagId =>
+      axios.post(`${TAG_API_URL}/assign`, {
+        restaurantId: selectedRestaurant.id,
+        tagId,
+        weight: parseFloat(tagWeights[tagId]) || 1
+      })
+    )
+
+    const unassignPromises = toUnassign.map(tagId =>
+      axios.post(`${TAG_API_URL}/remove`, {
+      restaurantId: selectedRestaurant.id,
+      tagId
+    })
+  )
+
+    await Promise.all([...assignPromises, ...unassignPromises])
+
+    alert('Tags updated successfully!')
+    setShowAssignTagModal(false)
+    setSelectedTags([])
+    setOriginalTags([])
+    setTagWeights({})
+    fetchRestaurants()
+  } catch (err) {
+    console.error('Error updating tags:', err)
+    setError(err.response?.data?.message || 'Failed to update tags')
+  } finally {
+    setLoading(false)
   }
+}
 
   const openAssignTagModal = (restaurant) => {
     setSelectedRestaurant(restaurant)
     const currentTags = restaurantTags[restaurant.id] || []
     setSelectedTags(currentTags.map(tag => tag.id))
+    setOriginalTags(currentTags.map(tag => tag.id))
     // Initialize weights for current tags
     const weights = {}
     currentTags.forEach(tag => {

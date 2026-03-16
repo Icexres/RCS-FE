@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import Header from '../../components/Header'
 import UserSidebar from '../../components/UserSidebar'
@@ -12,6 +13,7 @@ const RestaurantList = () => {
   const [favourites, setFavourites] = useState([])
   const [likes, setLikes] = useState([])
 
+  const router = useRouter()
   const { user } = useAuth()
   const userId = user?.data?.id || user?.id
   const API_URL = 'http://localhost:7000/api/restaurant'
@@ -183,7 +185,10 @@ const RestaurantList = () => {
 
                       {/* Action Buttons */}
                       <div className="flex gap-2 pt-4 border-t border-gray-100 mt-auto">
-                        <button className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                        <button 
+                          onClick={() => router.push(`/RestaurantView/${restaurant.id}`)}
+                          className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors"
+                        >
                           View Details
                         </button>
                         <button

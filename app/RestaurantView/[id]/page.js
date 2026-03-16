@@ -242,7 +242,7 @@ const RestaurantView = () => {
                   >
                     {isFavourite ? '⭐ Saved' : '☆ Save'}
                   </button>
-                </div>
+                </div>  
               </div>
             </div>
           </div>
