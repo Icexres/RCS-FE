@@ -15,7 +15,7 @@ export default function Header() {
           <div className="text-2xl font-bold cursor-pointer">Admin Panel</div>
         </Link>
         <div className="flex items-center gap-6">
-          <span className="text-sm">Welcome, {userName}</span>
+          <span className="text-sm">{userName}</span>
           <button 
             onClick={logout}
             className="bg-emerald-900 px-4 py-2 rounded hover:bg-emerald-950 transition-colors"
@@ -35,7 +35,7 @@ export default function Header() {
           <div className="text-2xl font-bold cursor-pointer">KNN Recommendation System</div>
         </Link>
         <div className="flex items-center gap-6">
-          <span className="text-sm">Welcome, {userName}</span>
+          <span className="text-sm">{userName}</span>
           <button 
             onClick={logout}
             className="bg-emerald-900 px-4 py-2 rounded hover:bg-emerald-950 transition-colors"

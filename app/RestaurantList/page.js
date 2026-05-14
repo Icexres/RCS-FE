@@ -5,6 +5,7 @@ import axios from 'axios'
 import Header from '../../components/Header'
 import UserSidebar from '../../components/UserSidebar'
 import { useAuth } from '@/context/AuthContext'
+import SearchBar from '../../components/SearchBar'
 
 const RestaurantList = () => {
   const [restaurants, setRestaurants] = useState([])
@@ -12,6 +13,7 @@ const RestaurantList = () => {
   const [error, setError] = useState(null)
   const [favourites, setFavourites] = useState([])
   const [likes, setLikes] = useState([])
+  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants)
 
   const router = useRouter()
   const { user } = useAuth()
@@ -27,6 +29,9 @@ const RestaurantList = () => {
       fetchUserFavourites()
     }
   }, [userId])
+  useEffect(() => {
+    setFilteredRestaurants(restaurants)
+  },[restaurants])
 
   const fetchRestaurants = async () => {
     try {
@@ -146,11 +151,12 @@ const RestaurantList = () => {
                 <p className="mt-4 text-gray-600">Loading restaurants...</p>
               </div>
             )}
+            <SearchBar restaurants={restaurants} onSearch={setFilteredRestaurants}/>
 
             {/* Restaurants Grid */}
-            {!loading && restaurants.length > 0 && (
+            {!loading && filteredRestaurants.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {restaurants.map((restaurant) => (
+                {filteredRestaurants.map((restaurant) => (
                   <div
                     key={restaurant.id}
                     className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100 flex flex-col"

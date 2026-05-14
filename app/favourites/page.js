@@ -4,6 +4,7 @@ import axios from 'axios'
 import Header from '../../components/Header'
 import UserSidebar from '../../components/UserSidebar'
 import { useAuth } from '@/context/AuthContext'
+import RestaurantCard from '../../components/RestaurantCard'
 
 const Favourites = () => {
   const [favouriteRestaurants, setFavouriteRestaurants] = useState([])
@@ -141,61 +142,18 @@ const Favourites = () => {
 
             {/* Favourites Grid */}
             {!loading && favouriteRestaurants.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {favouriteRestaurants.map((restaurant) => (
-                  <div
-                    key={restaurant.id}
-                    className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100 flex flex-col"
-                  >
-                    {/* Restaurant Header */}
-                    <div className="bg-linear-to-r from-emerald-500 to-emerald-600 h-32 flex items-center justify-center relative">
-                      {/* Remove from Favourites Button */}
-                      <button
-                        onClick={() => handleRemoveFavourite(restaurant.id)}
-                        className="absolute top-3 right-3 bg-white p-2 rounded-full hover:scale-110 transition-transform shadow-md"
-                        title="Remove from favourites"
-                      >
-                        ❤️
-                      </button>
-                    </div>
-
-                    {/* Restaurant Info */}
-                    <div className="p-6 flex flex-col grow">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{restaurant.r_name}</h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{restaurant.r_desc}</p>
-
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-start text-sm">
-                          <span className="text-gray-500 mr-2">📍</span>
-                          <span className="text-gray-700">{restaurant.r_location}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <span className="text-gray-500 mr-2">📞</span>
-                          <span className="text-gray-700">{restaurant.phone}</span>
-                        </div>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex gap-2 pt-4 border-t border-gray-100 mt-auto">
-                        <button onClick={() => window.location.href = `/RestaurantView/${restaurant.id}`} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
-                          View Details
-                        </button>
-                        <button
-                          onClick={() => handleLike(restaurant.id)}
-                          className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                            likes.includes(restaurant.id)
-                              ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          {likes.includes(restaurant.id) ? '👍 Liked' : '👍 Like'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {favouriteRestaurants.map((restaurant) => (
+              <RestaurantCard
+              key={restaurant.id}
+              restaurant={restaurant}
+              isLiked={likes.includes(restaurant.id)}
+              onRemoveFavourite={handleRemoveFavourite}
+              onToggleLike={handleLike}
+              />
+            ))}
+          </div>
+        )}
 
             {/* Empty State */}
             {!loading && favouriteRestaurants.length === 0 && !error && (
