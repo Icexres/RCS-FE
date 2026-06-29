@@ -6,6 +6,7 @@ import axios from 'axios'
 import Header from '../../../components/Header'
 import UserSidebar from '../../../components/UserSidebar'
 import { useAuth } from '@/context/AuthContext'
+import BookingForm from '../../../components/BookinForm'
 
 const RestaurantView = () => {
   const params = useParams()
@@ -242,7 +243,8 @@ const RestaurantView = () => {
                   >
                     {isFavourite ? '⭐ Saved' : '☆ Save'}
                   </button>
-                </div>    
+                </div>
+                <BookingForm restaurantId={parseInt(restaurantId)} userId={userId} userRole={user?.data?.role || user?.role} />  
               </div>
             </div>
           </div>
