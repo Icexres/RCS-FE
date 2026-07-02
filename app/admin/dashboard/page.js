@@ -58,9 +58,9 @@ const AdminRestaurants = () => {
   const fetchRestaurantTags = async (restaurants) => {
     try {
       const tagPromises = restaurants.map(restaurant => 
-        axios.get(`${TAG_API_URL}/restaurant/${restaurant.id}`)
-          .then(res => ({ restaurantId: restaurant.id, tags: res.data.data || [] }))
-          .catch(() => ({ restaurantId: restaurant.id, tags: [] }))
+        axios.get(`${TAG_API_URL}/restaurant/${restaurant.restaurant_id}`)
+          .then(res => ({ restaurantId: restaurant.restaurant_id, tags: res.data.data || [] }))
+          .catch(() => ({ restaurantId: restaurant.restaurant_id, tags: [] }))
       )
       
       const results = await Promise.all(tagPromises)
@@ -153,8 +153,8 @@ const AdminRestaurants = () => {
     try {
       setLoading(true)
       await axios.delete(`${TAG_API_URL}/delete/${tagId}`)
-      setTags(tags.filter(tag => tag.id !== tagId))
-      
+      setTags(tags.filter(tag => tag.tag_id !== tagId))
+        
       alert('Tag deleted successfully!')
       fetchRestaurants()
     } catch (err) {
@@ -176,7 +176,7 @@ const AdminRestaurants = () => {
 
     const assignPromises = toAssign.map(tagId =>
       axios.post(`${TAG_API_URL}/assign`, {
-        restaurantId: selectedRestaurant.id,
+        restaurantId: selectedRestaurant.restaurant_id,
         tagId,
         weight: parseFloat(tagWeights[tagId]) || 1
       })
@@ -184,7 +184,7 @@ const AdminRestaurants = () => {
 
     const unassignPromises = toUnassign.map(tagId =>
       axios.post(`${TAG_API_URL}/remove`, {
-      restaurantId: selectedRestaurant.id,
+      restaurantId: selectedRestaurant.restaurant_id,
       tagId
     })
   )
@@ -207,13 +207,13 @@ const AdminRestaurants = () => {
 
   const openAssignTagModal = (restaurant) => {
     setSelectedRestaurant(restaurant)
-    const currentTags = restaurantTags[restaurant.id] || []
-    setSelectedTags(currentTags.map(tag => tag.id))
-    setOriginalTags(currentTags.map(tag => tag.id))
+    const currentTags = restaurantTags[restaurant.restaurant_id] || []
+    setSelectedTags(currentTags.map(tag => tag.tag_id))
+    setOriginalTags(currentTags.map(tag => tag.tag_id))
     // Initialize weights for current tags
     const weights = {}
     currentTags.forEach(tag => {
-      weights[tag.id] = tag.weight || 1
+      weights[tag.tag_id] = tag.weight || 1
     })
     setTagWeights(weights)
     setShowAssignTagModal(true)
@@ -239,7 +239,7 @@ const AdminRestaurants = () => {
 
     try {
       await axios.delete(`${API_URL}/delete/${id}`)
-      setRestaurants(restaurants.filter(restaurant => restaurant.id !== id))
+      setRestaurants(restaurants.filter(restaurant => restaurant.restaurant_id !== id))
       
       alert('Restaurant deleted successfully!')
     } catch (err) {
@@ -311,17 +311,17 @@ const AdminRestaurants = () => {
                     <div className="space-y-2">
                       {tags.map(tag => (
                         <div 
-                          key={tag.id} 
+                          key={tag.tag_id} 
                           className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition"
                         >
                           <div className="flex items-center gap-3">
                             <span className="inline-block bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full font-medium">
                               {tag.name}
                             </span>
-                            <span className="text-sm text-gray-500">ID: {tag.id}</span>
+                            <span className="text-sm text-gray-500">ID: {tag.tag_id}</span>
                           </div>
                           <button
-                            onClick={() => handleDeleteTag(tag.id)}
+                            onClick={() => handleDeleteTag(tag.tag_id)}
                             className="text-red-600 hover:text-red-800 font-medium px-3 py-1 rounded hover:bg-red-50 transition"
                             disabled={loading}
                           >
@@ -396,17 +396,17 @@ const AdminRestaurants = () => {
                   </h2>
                   <div className="space-y-2 max-h-96 overflow-y-auto mb-4">
                     {tags.map(tag => (
-                      <div key={tag.id} className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50">
+                      <div key={tag.tag_id} className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50">
                         <input
                           type="checkbox"
-                          checked={selectedTags.includes(tag.id)}
-                          onChange={() => toggleTagSelection(tag.id)}
+                          checked={selectedTags.includes(tag.tag_id)}
+                          onChange={() => toggleTagSelection(tag.tag_id)}
                           className="w-4 h-4 text-blue-600 rounded"
                         />
                         <div className="flex-1">
                           <div className="font-medium">{tag.name}</div>
                         </div>
-                        {selectedTags.includes(tag.id) && (
+                        {selectedTags.includes(tag.tag_id) && (
                           <div className="flex items-center gap-2">
                             <label className="text-sm text-gray-600">Weight:</label>
                             <input
@@ -414,8 +414,8 @@ const AdminRestaurants = () => {
                               min="0"
                               max="100"
                               step="0.1"
-                              value={tagWeights[tag.id] || 1}
-                              onChange={(e) => handleWeightChange(tag.id, e.target.value)}
+                              value={tagWeights[tag.tag_id] || 1}
+                              onChange={(e) => handleWeightChange(tag.tag_id, e.target.value)}
                               className="w-16 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                               placeholder="1"
                             />
@@ -467,9 +467,9 @@ const AdminRestaurants = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {restaurants.map((restaurant, index) => {
-                      const tags = restaurantTags[restaurant.id] || []
+                      const tags = restaurantTags[restaurant.restaurant_id] || []
                       return (
-                        <tr key={restaurant.id || index} className="hover:bg-gray-50">
+                        <tr key={restaurant.restaurant_id || index} className="hover:bg-gray-50">
                           <td className="px-6 py-4 text-sm text-gray-900">{restaurant.r_name}</td>
                           <td className="px-6 py-4 text-sm text-gray-600">{restaurant.r_desc}</td>
                           <td className="px-6 py-4 text-sm text-gray-600">{restaurant.r_location}</td>
@@ -478,7 +478,7 @@ const AdminRestaurants = () => {
                             <div className="flex flex-wrap gap-1">
                               {tags.length > 0 ? (
                                 tags.map(tag => (
-                                  <span key={tag.id} className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                                  <span key={tag.tag_id} className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
                                     {tag.name}
                                   </span>
                                 ))
@@ -495,7 +495,7 @@ const AdminRestaurants = () => {
                               Tags
                             </button>
                             <button
-                              onClick={() => handleDeleteRestaurant(restaurant.id)}
+                              onClick={() => handleDeleteRestaurant(restaurant.restaurant_id)}
                               className="text-red-600 hover:text-red-800 font-medium"
                             >
                               Delete

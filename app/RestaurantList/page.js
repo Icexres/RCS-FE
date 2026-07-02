@@ -17,18 +17,21 @@ const RestaurantList = () => {
 
   const router = useRouter()
   const { user } = useAuth()
-  const userId = user?.data?.id || user?.id
+  const userId = user?.data?.id
   const API_URL = 'http://localhost:7000/api/restaurant'
   const LIKE_API_URL = 'http://localhost:7000/api/like'
   const FAV_API_URL = 'http://localhost:7000/api/favourite'
 
   useEffect(() => {
-    if (userId) {
-      fetchRestaurants()
-      fetchUserLikes()
-      fetchUserFavourites()
-    }
-  }, [userId])
+  if (!userId) {
+    setLoading(false)
+    return
+  }
+
+  fetchRestaurants()
+  fetchUserLikes()
+  fetchUserFavourites()
+}, [userId])
   useEffect(() => {
     setFilteredRestaurants(restaurants)
   },[restaurants])
@@ -158,18 +161,18 @@ const RestaurantList = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredRestaurants.map((restaurant) => (
                   <div
-                    key={restaurant.id}
+                    key={restaurant.restaurant_id}
                     className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100 flex flex-col"
                   >
                     {/* Restaurant Header */}
                     <div className="bg-linear-to-r from-emerald-500 to-emerald-600 h-32 flex items-center justify-center relative">
                       {/* Favourite Button - Top Right */}
                       <button
-                        onClick={() => handleFavourite(restaurant.id)}
+                        onClick={() => handleFavourite(restaurant.restaurant_id)}
                         className="absolute top-3 right-3 bg-white p-2 rounded-full hover:scale-110 transition-transform shadow-md"
-                        title={favourites.includes(restaurant.id) ? "Remove from favourites" : "Add to favourites"}
+                        title={favourites.includes(restaurant.restaurant_id) ? "Remove from favourites" : "Add to favourites"}
                       >
-                        {favourites.includes(restaurant.id) ? '❤️' : '🤍'}
+                        {favourites.includes(restaurant.restaurant_id) ? '❤️' : '🤍'}
                       </button>
                     </div>
 
@@ -192,20 +195,20 @@ const RestaurantList = () => {
                       {/* Action Buttons */}
                       <div className="flex gap-2 pt-4 border-t border-gray-100 mt-auto">
                         <button 
-                          onClick={() => router.push(`/RestaurantView/${restaurant.id}`)}
+                          onClick={() => router.push(`/RestaurantView/${restaurant.restaurant_id}`)}
                           className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors"
                         >
                           View Details
                         </button>
                         <button
-                          onClick={() => handleLike(restaurant.id)}
+                          onClick={() => handleLike(restaurant.restaurant_id)}
                           className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                            likes.includes(restaurant.id)
+                            likes.includes(restaurant.restaurant_id)
                               ? 'bg-emerald-600 text-white hover:bg-emerald-700'
                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                           }`}
                         >
-                          {likes.includes(restaurant.id) ? '👍 Liked' : '👍 Like'}
+                          {likes.includes(restaurant.restaurant_id) ? '👍 Liked' : '👍 Like'}
                         </button>
                       </div>
                     </div>

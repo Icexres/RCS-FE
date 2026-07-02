@@ -20,8 +20,7 @@ const RestaurantView = () => {
   const [isFavourite, setIsFavourite] = useState(false)
 
   const { user } = useAuth()
-  const userId = user?.data?.id || user?.id
-
+  const userId = user?.data?.id
   const API_URL = 'http://localhost:7000/api/restaurant'
   const TAG_API_URL = 'http://localhost:7000/api/tag'
   const LIKE_API_URL = 'http://localhost:7000/api/like'
@@ -40,7 +39,7 @@ const RestaurantView = () => {
       setLoading(true)
       const response = await axios.get(`${API_URL}/all`)
       const allRestaurants = response.data.data || []
-      const found = allRestaurants.find(r => r.id === parseInt(restaurantId))
+      const found = allRestaurants.find(r => r.restaurant_id === parseInt(restaurantId))
       
       if (found) {
         setRestaurant(found)
@@ -90,13 +89,13 @@ const RestaurantView = () => {
     try {
       if (isLiked) {
         await axios.post(`${LIKE_API_URL}/remove`, {
-          userId,
+          userId: userId,
           restaurantId: parseInt(restaurantId)
         })
         setIsLiked(false)
       } else {
         await axios.post(`${LIKE_API_URL}/add`, {
-          userId,
+          userId: userId,
           restaurantId: parseInt(restaurantId)
         })
         setIsLiked(true)
@@ -110,13 +109,13 @@ const RestaurantView = () => {
     try {
       if (isFavourite) {
         await axios.post(`${FAV_API_URL}/remove`, {
-          userId,
+          userId: userId,
           restaurantId: parseInt(restaurantId)
         })
         setIsFavourite(false)
       } else {
         await axios.post(`${FAV_API_URL}/add`, {
-          userId,
+          userId: userId,
           restaurantId: parseInt(restaurantId)
         })
         setIsFavourite(true)
@@ -206,7 +205,7 @@ const RestaurantView = () => {
                     <div className="flex flex-wrap gap-2">
                       {tags.map(tag => (
                         <div
-                          key={tag.id}
+                          key={tag.tag_id}
                           className="flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 border border-emerald-200"
                         >
                           <span className="text-sm font-medium text-emerald-800">{tag.name}</span>

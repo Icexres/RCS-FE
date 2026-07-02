@@ -50,7 +50,7 @@ const UserBookings = ({ userId, userRole }) => {
           }
         }
       )
-      setBookings(bookings.filter(b => b.id !== bookingId))
+      setBookings(bookings.filter(b => b.booking_id !== bookingId))
     } catch (err) {
       console.error('Error canceling booking:', err)
       alert('Failed to cancel booking')
@@ -85,7 +85,7 @@ const UserBookings = ({ userId, userRole }) => {
         <div className="flex gap-4 overflow-x-auto pb-4">
           {confirmedBookings.map(booking => (
             <div
-              key={booking.id}
+              key={booking.booking_id}
               className="shrink-0 w-80 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-4 group"
             >
               <div className="space-y-3">
@@ -120,7 +120,7 @@ const UserBookings = ({ userId, userRole }) => {
                 </div>
 
                 <button
-                  onClick={() => handleCancelBooking(booking.id)}
+                  onClick={() => handleCancelBooking(booking.booking_id)}
                   className="w-full mt-3 opacity-0 group-hover:opacity-100 transition-opacity bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 rounded-lg"
                 >
                   Cancel Booking

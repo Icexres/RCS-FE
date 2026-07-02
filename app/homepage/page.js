@@ -17,18 +17,20 @@ const Homepage = () => {
   const [error, setError] = useState(null)
 
   const { user } = useAuth()
-  const userId = user?.data?.id || user?.id
-
+  const userId = user?.data?.id
   const API_URL = 'http://localhost:7000/api/restaurant'
   const LIKE_API_URL = 'http://localhost:7000/api/like'
   const FAV_API_URL = 'http://localhost:7000/api/favourite'
   const REC_URL = 'http://localhost:7000/api/recommendations/user'
 
   useEffect(() => {
-    if (userId) {
-      fetchHomepageData()
-    }
-  }, [userId])
+  if (!userId) {
+    setLoading(false)
+    return
+  }
+
+  fetchHomepageData()
+}, [userId])
 
   const fetchHomepageData = async () => {
     try {
@@ -59,7 +61,7 @@ const Homepage = () => {
       ) || []
 
       const liked = allRestaurants.filter(restaurant =>
-        likedIds.includes(restaurant.id)
+        likedIds.includes(restaurant.restaurant_id)
       )
 
       setLikedRestaurants(liked)
@@ -76,7 +78,7 @@ const Homepage = () => {
       ) || []
 
       const favourited = allRestaurants.filter(restaurant =>
-        favouriteIds.includes(restaurant.id)
+        favouriteIds.includes(restaurant.restaurant_id)
       )
 
       setFavouriteRestaurants(favourited)
@@ -152,7 +154,7 @@ const Homepage = () => {
                   >
                     {favouriteRestaurants.map((restaurant) => (
                       <RestaurantCardHorizontal
-                        key={`favourite-${restaurant.id}`}
+                        key={`favourite-${restaurant.restaurant_id}`}
                         restaurant={restaurant}
                         gradientFrom="from-rose-500"
                         gradientTo="to-orange-400"
@@ -181,7 +183,7 @@ const Homepage = () => {
                   >
                     {likedRestaurants.map((restaurant) => (
                       <RestaurantCardHorizontal
-                        key={`liked-${restaurant.id}`}
+                        key={`liked-${restaurant.restaurant_id  }`}
                         restaurant={restaurant}
                         gradientFrom="from-sky-500"
                         gradientTo="to-cyan-400"
@@ -210,7 +212,7 @@ const Homepage = () => {
                   >
                     {contentBasedRecs.map((restaurant) => (
                       <RecommendationCard
-                        key={`content-${restaurant.id}`}
+                        key={`content-${restaurant.restaurant_id}`}
                         restaurant={restaurant}
                         gradientFrom="from-purple-500"
                         gradientTo="to-pink-400"
@@ -241,7 +243,7 @@ const Homepage = () => {
                   >
                     {collaborativeRecs.map((restaurant) => (
                       <RecommendationCard
-                        key={`collab-${restaurant.id}`}
+                        key={`collab-${restaurant.restaurant_id}`}
                         restaurant={restaurant}
                         gradientFrom="from-indigo-500"
                         gradientTo="to-blue-400"

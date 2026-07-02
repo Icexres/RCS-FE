@@ -54,7 +54,7 @@ const SearchBar = ({restaurants=[],onSearch}) => {
         <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto z-10">
           {filteredResults.map(restaurant => (
             <button
-              key={restaurant.id}
+              key={restaurant.restaurant_id}
               onClick={() => handleSelect(restaurant)}
               className="w-full text-left px-4 py-3 hover:bg-gray-100 border-b border-gray-200 last:border-b-0"
             >

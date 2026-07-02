@@ -22,7 +22,7 @@ const RestaurantCardHorizontal = ({ restaurant, gradientFrom, gradientTo }) => {
 
         <div className="mt-auto pt-4 sm:pt-5">
           <a
-            href={`/RestaurantView/${restaurant.id}`}
+            href={`/RestaurantView/${restaurant.restaurant_id}`}
             className="inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
           >
             View Details

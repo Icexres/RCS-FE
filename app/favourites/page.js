@@ -13,7 +13,7 @@ const Favourites = () => {
   const [likes, setLikes] = useState([])
 
   const { user } = useAuth()
-  const userId = user?.data?.id || user?.id
+  const userId = user?.data?.id
 
   const API_URL = 'http://localhost:7000/api/restaurant'
   const LIKE_API_URL = 'http://localhost:7000/api/like'
@@ -48,7 +48,7 @@ const Favourites = () => {
 
       // Filter to get only favourited restaurants
       const favourited = allRestaurants.filter(restaurant => 
-        favouriteIds.includes(restaurant.id)
+        favouriteIds.includes(restaurant.restaurant_id)
       )
 
       setFavouriteRestaurants(favourited)
@@ -81,7 +81,7 @@ const Favourites = () => {
       })
       
       // Remove from local state
-      setFavouriteRestaurants(favouriteRestaurants.filter(r => r.id !== restaurantId))
+      setFavouriteRestaurants(favouriteRestaurants.filter(r => r.restaurant_id !== restaurantId))
     } catch (err) {
       console.error('Error removing favourite:', err)
       alert('Failed to remove from favourites. Please try again.')
@@ -145,9 +145,9 @@ const Favourites = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {favouriteRestaurants.map((restaurant) => (
               <RestaurantCard
-              key={restaurant.id}
+              key={restaurant.restaurant_id}
               restaurant={restaurant}
-              isLiked={likes.includes(restaurant.id)}
+              isLiked={likes.includes(restaurant.restaurant_id)}
               onRemoveFavourite={handleRemoveFavourite}
               onToggleLike={handleLike}
               />

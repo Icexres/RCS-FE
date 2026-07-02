@@ -7,8 +7,7 @@ import UserBookings from '../../components/UserBookings'
 
 const UserDashboard = () => {
   const { user } = useAuth();
-  const userId = user?.data?.id || user?.id
-  
+  const userId = user?.data?.id  
   const [profile, setProfile] = useState({
     name: user?.data?.username || 'User',
     email: user?.data?.email || 'user@test.com',
