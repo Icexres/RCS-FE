@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import Header from '../../components/Header'
 import UserSidebar from '../../components/UserSidebar'
@@ -18,6 +19,7 @@ const Homepage = () => {
 
   const { user } = useAuth()
   const userId = user?.data?.id
+  const router = useRouter()
   const API_URL = 'http://localhost:7000/api/restaurant'
   const LIKE_API_URL = 'http://localhost:7000/api/like'
   const FAV_API_URL = 'http://localhost:7000/api/favourite'
@@ -29,9 +31,31 @@ const Homepage = () => {
     return
   }
 
-  fetchHomepageData()
-}, [userId])
+  const init = async () => {
+    const hasPreferences = await checkColdStartPreferences()
+    if (hasPreferences) {
+      fetchHomepageData()
+    }
+  }
 
+  init()
+}, [userId])
+  const checkColdStartPreferences = async () => {
+  try {
+    const response = await axios.get(`http://localhost:7000/api/coldstart/${userId}`)
+    const savedTags = response.data.data || []
+
+    if (!savedTags.length) {
+      router.push('/coldstart')
+      return false
+    }
+
+    return true
+  } catch (err) {
+    router.push('/coldstart')
+    return false
+  }
+}
   const fetchHomepageData = async () => {
     try {
       setLoading(true)
