@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Header from '../../../components/Header'
 import AdminSidebar from '../../../components/AdminSidebar'
+import AdminAuth from '../../../components/AdminAuth'
 
 const AdminRestaurants = () => {
   const [restaurants, setRestaurants] = useState([])
@@ -286,6 +287,7 @@ const AdminRestaurants = () => {
 
   return (
     <>
+      <AdminAuth>
       <Header />
       <div className="flex min-h-screen bg-gray-100">
         <AdminSidebar />
@@ -553,6 +555,7 @@ const AdminRestaurants = () => {
           </div>
         </div>
       </div>
+      </AdminAuth>
     </>
   )
 }

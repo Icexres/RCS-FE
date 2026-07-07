@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import Header from '../../../components/Header'
 import AdminSidebar from '../../../components/AdminSidebar'
 
+
 const AdminProfile = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState({
@@ -15,6 +16,7 @@ const AdminProfile = () => {
 
   return (
     <>
+      <AdminAuth>
       <Header />
       <div className="flex min-h-screen bg-gray-100">
         <AdminSidebar />
@@ -27,6 +29,7 @@ const AdminProfile = () => {
           </div>
         </div>
       </div>
+      </AdminAuth>
     </>
   )
 }
