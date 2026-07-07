@@ -104,6 +104,15 @@ const AdminRestaurants = () => {
 
   const handleAddRestaurant = async (e) => {
     e.preventDefault()
+    const normalizedName = newRestaurant.r_name.trim().toLowerCase()
+    const duplicateExists = restaurants.some(
+    restaurant => restaurant.r_name?.trim().toLowerCase() === normalizedName
+  )
+
+  if (duplicateExists) {
+    setError('Restaurant already exists.')
+    return
+  }
     setLoading(true)
     setError(null)
 
@@ -127,6 +136,16 @@ const AdminRestaurants = () => {
 
   const handleAddTag = async (e) => {
     e.preventDefault()
+
+    const normalizedName = newTag.name.trim().toLowerCase()
+    const duplicateExists = tags.some(
+    tag => tag.name?.trim().toLowerCase() === normalizedName
+    )
+    
+      if (duplicateExists) {
+    setError('Tag already exists.')
+    return
+    }
     setLoading(true)
     setError(null)
 
