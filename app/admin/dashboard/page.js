@@ -14,6 +14,7 @@ const AdminRestaurants = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [originalTags, setOriginalTags] = useState([])
+  const [originalTagWeights, setOriginalTagWeights] = useState({})
   const [newRestaurant, setNewRestaurant] = useState({
     r_name: '',
     r_desc: '',
@@ -174,11 +175,24 @@ const AdminRestaurants = () => {
     const toAssign = selectedTags.filter(id => !originalTags.includes(id))
     const toUnassign = originalTags.filter(id => !selectedTags.includes(id))
 
+    const toUpdate = selectedTags.filter(id =>
+      originalTags.includes(id) &&
+      Number(tagWeights[id]) !== Number(originalTagWeights[id])
+    )
+
     const assignPromises = toAssign.map(tagId =>
       axios.post(`${TAG_API_URL}/assign`, {
         restaurantId: selectedRestaurant.restaurant_id,
         tagId,
-        weight: parseFloat(tagWeights[tagId]) || 1
+        weight: parseFloat(tagWeights[tagId]) ?? 1
+      })
+    )
+
+    const updatePromises = toUpdate.map(tagId =>
+      axios.put(`${TAG_API_URL}/weight`, {
+        restaurantId: selectedRestaurant.restaurant_id,
+        tagId,
+        weight: parseFloat(tagWeights[tagId]) ?? 1
       })
     )
 
@@ -189,7 +203,7 @@ const AdminRestaurants = () => {
     })
   )
 
-    await Promise.all([...assignPromises, ...unassignPromises])
+    await Promise.all([...assignPromises, ...updatePromises, ...unassignPromises])
 
     alert('Tags updated successfully!')
     setShowAssignTagModal(false)
@@ -208,14 +222,17 @@ const AdminRestaurants = () => {
   const openAssignTagModal = (restaurant) => {
     setSelectedRestaurant(restaurant)
     const currentTags = restaurantTags[restaurant.restaurant_id] || []
-    setSelectedTags(currentTags.map(tag => tag.tag_id))
-    setOriginalTags(currentTags.map(tag => tag.tag_id))
+    
+    const tagIds = currentTags.map(tag => tag.tag_id)
+    setSelectedTags(tagIds)
+    setOriginalTags(tagIds)
     // Initialize weights for current tags
     const weights = {}
     currentTags.forEach(tag => {
       weights[tag.tag_id] = tag.weight || 1
     })
     setTagWeights(weights)
+    setOriginalTagWeights(weights)
     setShowAssignTagModal(true)
   }
 
